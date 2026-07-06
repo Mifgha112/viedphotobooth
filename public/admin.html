@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Velvet Snap</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #FAF5F5; padding: 30px; color: #221113; }
+        h1 { color: #4A0E17; border-bottom: 3px solid #D4AF37; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        th, td { padding: 12px; border: 1px solid #EAE1E1; text-align: left; }
+        th { background-color: #4A0E17; color: white; }
+        .btn-delete { background: #984447; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+        .btn-edit { background: #D4AF37; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; margin-right: 5px; }
+        button:hover { opacity: 0.9; }
+        /* Modal Style */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 400px; display:flex; flex-direction:column; gap:10px; }
+        .modal-content input, .modal-content select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <h1>Dashboard Manajemen Reservasi Photobooth</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>WhatsApp</th>
+                <th>Paket</th>
+                <th>Tanggal</th>
+                <th>Jam</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Data dari database akan masuk ke sini -->
+        </tbody>
+    </table>
+
+    <!-- Modal Form Edit -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Data Reservasi</h3>
+            <input type="hidden" id="editId">
+            <label>Nama Lengkap</label><input type="text" id="editName">
+            <label>WhatsApp</label><input type="text" id="editWhatsapp">
+            <label>Paket</label>
+            <select id="editPackage">
+                <option value="Standard Box - Rp 150.000">Standard Box</option>
+                <option value="Glamour Video Booth - Rp 300.000">Glamour Video Booth</option>
+            </select>
+            <label>Tanggal</label><input type="date" id="editDate">
+            <label>Jam</label><input type="text" id="editTime">
+            <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
+                <button onclick="closeModal()" style="padding:8px; background:#ccc; border:none;">Batal</button>
+                <button onclick="saveEdit()" style="padding:8px; background:#4A0E17; color:white; border:none;">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ambil data saat halaman dibuka
+        async function fetchReservations() {
+            const res = await fetch('/api/reservations');
+            const data = await res.json();
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.booking_code}</strong></td>
+                        <td>${item.name}</td>
+                        <td>${item.whatsapp}</td>
+                        <td>${item.package}</td>
+                        <td>${item.date}</td>
+                        <td>${item.time}</td>
+                        <td>
+                            <button class="btn-edit" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">Edit</button>
+                            <button class="btn-delete" onclick="deleteReservation(${item.id})">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Hapus Data
+        async function deleteReservation(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus reservasi ini?')) {
+                await fetch(`/api/reservations/${id}`, { method: 'DELETE' });
+                fetchReservations();
+            }
+        }
+
+        // Buka Modal Edit & Isi Data Lama
+        function openEditModal(item) {
+            document.getElementById('editId').value = item.id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editWhatsapp').value = item.whatsapp;
+            document.getElementById('editPackage').value = item.package;
+            document.getElementById('editDate').value = item.date;
+            document.getElementById('editTime').value = item.time;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Simpan Hasil Edit ke Database
+        async function saveEdit() {
+            const id = document.getElementById('editId').value;
+            const updatedData = {
+                name: document.getElementById('editName').value,
+                whatsapp: document.getElementById('editWhatsapp').value,
+                package: document.getElementById('editPackage').value,
+                date: document.getElementById('editDate').value,
+                time: document.getElementById('editTime').value,
+                email: '', // Opsional di panel admin
+                notes: ''
+            };
+
+            await fetch(`/api/reservations/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            closeModal();
+            fetchReservations();
+        }
+
+        fetchReservations();
+    </script>
+</body>
+</html>
