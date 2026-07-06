@@ -29,17 +29,20 @@ app.post('/api/reservations', async (req, res) => {
     res.json(data[0]);
 });
 
-// API: Ambil Semua Data untuk Halaman Admin Dashboard
-app.get('/api/admin/reservations', async (req, res) => {
-    const { data, error } = await supabase
-        .from('reservations')
-        .select('*')
-        .order('id', { ascending: false });
+// Fungsi untuk mengambil semua data reservasi untuk halaman admin
+app.get('/api/reservations', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('reservations')
+            .select('*')
+            .order('id', { ascending: false }); // Menampilkan pesanan terbaru di paling atas
 
-    if (error) {
-        return res.status(500).json({ error: error.message });
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Gagal mengambil data dari database' });
     }
-    res.json(data);
 });
 
 // Jalankan Server Port Otomatis
