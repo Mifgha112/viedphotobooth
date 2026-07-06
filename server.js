@@ -1,79 +1,52 @@
-import express from 'express';
-import sqlite3 from 'sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const express = require('express');
+const path = require('path');
+const { createClient } = require('@supabase/supabase-client');
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = 3000;
-
-// Middleware
 app.use(express.json());
+
+// ⚠️ GANTI DENGAN DATA DARI SUPABASE KAMU
+const SUPABASE_URL = 'https://eqyghtxsldbawedlhpua.supabase.co'; 
+const SUPABASE_KEY = 'MASUKKAN_ANON_PUBLIC_KEY_KAMU_DISINI'; 
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Menyajikan file HTML & CSS dari folder public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Inisialisasi Database SQLite
-const db = new sqlite3.Database('./reservasi.db', (err) => {
-    if (err) console.error('Gagal memuat database:', err.message);
-    else console.log('Sukses terhubung ke database SQLite.');
+// API: Simpan Reservasi Baru dari Pelanggan
+app.post('/api/reservations', async (req, res) => {
+    const { name, whatsapp, email, package, date, time, notes } = req.body;
+    const booking_code = 'VS-' + Math.floor(1000 + Math.random() * 9000);
+
+    const { data, error } = await supabase
+        .from('reservations')
+        .insert([{ name, whatsapp, email, package, date, time, notes, booking_code }])
+        .select();
+
+    if (error) {
+        return res.status(500).json({ error: error.message });
+    }
+    res.json(data[0]);
 });
 
-// Membuat Tabel otomatis jika belum ada
-db.run(`CREATE TABLE IF NOT EXISTS reservations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    whatsapp TEXT NOT NULL,
-    email TEXT NOT NULL,
-    package TEXT NOT NULL,
-    date TEXT NOT NULL,
-    time TEXT NOT NULL,
-    notes TEXT,
-    booking_code TEXT NOT NULL
-)`);
+// API: Ambil Semua Data untuk Halaman Admin Dashboard
+app.get('/api/admin/reservations', async (req, res) => {
+    const { data, error } = await supabase
+        .from('reservations')
+        .select('*')
+        .order('id', { ascending: false });
 
-// 1. API: Tambah Reservasi Baru
-app.post('/api/reservations', (req, res) => {
-    const { name, whatsapp, email, package: pkg, date, time, notes } = req.body;
-    const booking_code = 'VLV-' + Math.floor(1000 + Math.random() * 9000);
-    
-    const query = `INSERT INTO reservations (name, whatsapp, email, package, date, time, notes, booking_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    
-    db.run(query, [name, whatsapp, email, pkg, date, time, notes, booking_code], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ id: this.lastID, booking_code, name, whatsapp, package: pkg, date, time });
-    });
+    if (error) {
+        return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
 });
 
-// 2. API: Ambil Semua Data Reservasi (Untuk Dashboard)
-app.get('/api/reservations', (req, res) => {
-    db.all(`SELECT * FROM reservations ORDER BY date ASC`, [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(rows);
-    });
-});
-
-// 3. API: Update/Edit Data Reservasi
-app.put('/api/reservations/:id', (req, res) => {
-    const { id } = req.params;
-    const { name, whatsapp, email, package: pkg, date, time, notes } = req.body;
-    
-    const query = `UPDATE reservations SET name = ?, whatsapp = ?, email = ?, package = ?, date = ?, time = ?, notes = ? WHERE id = ?`;
-    
-    db.run(query, [name, whatsapp, email, pkg, date, time, notes, id], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, message: 'Data berhasil diperbarui' });
-    });
-});
-
-// 4. API: Hapus Data Reservasi
-app.delete('/api/reservations/:id', (req, res) => {
-    const { id } = req.params;
-    db.run(`DELETE FROM reservations WHERE id = ?`, id, function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, message: 'Data berhasil dihapus' });
-    });
-});
-
-// Jalankan Server
+// Jalankan Server Port Otomatis
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server berjalan di http://localhost:${PORT}`);
+    console.log(`Server berjalan di port ${PORT}`);
 });
+
+module.exports = app; // Penting agar Vercel bisa membaca express
