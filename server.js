@@ -6,8 +6,8 @@ const app = express();
 app.use(express.json());
 
 // ⚠️ GANTI DENGAN DATA DARI SUPABASE KAMU
-const SUPABASE_URL = 'https://eqyghtxsldbawedlhpua.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_nk8W5jyBWABsD07iMmnxvQ_qhrgnf4o'
+const SUPABASE_URL = 'https://zcwetmteghrdgpynsgax.supabase.co'; 
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpjd2V0bXRlZ2hyZGdweW5zZ2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTMzMjMsImV4cCI6MjA5ODg4OTMyM30.I4sl6dFsbm9O6iYtWfipUY4jt_uBas8Kfvm5ppK-9-I'
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Menyajikan file HTML & CSS dari folder public
