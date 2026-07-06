@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vied Photobooth- Premium Video & Photobooth Reservation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --maroon-dark: #4A0E17;
+            --maroon-base: #722F37;
+            --maroon-light: #984447;
+            --gold: #D4AF37;
+            --gold-light: #F3E5AB;
+            --cream: #FAF5F5;
+            --dark: #221113;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(74, 14, 23, 0.85), rgba(34, 17, 19, 0.9)), 
+                        url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200') no-repeat center center/cover;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--gold);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--gold-light);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: -40px auto 60px auto;
+            padding: 0 20px;
+        }
+
+        .reservation-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(74, 14, 23, 0.15);
+            border: 1px solid rgba(114, 47, 55, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--maroon-dark);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .card-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .booking-form {
+            padding: 35px;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            color: var(--maroon-dark);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--maroon-light);
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 600px) {
+            .form-group.full-width { grid-column: span 1; }
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--maroon-dark);
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 1.5px solid #D0C5C5;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #FCFAFA;
+            transition: all 0.3s ease;
+            color: var(--dark);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--maroon-light);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(152, 68, 71, 0.15);
+        }
+
+        .package-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            grid-column: span 2;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .package-grid {
+                grid-template-columns: 1fr;
+                grid-column: span 1;
+            }
+        }
+
+        .package-option {
+            border: 2px solid #EAE1E1;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #FDFAFA;
+        }
+
+        .package-option:hover {
+            border-color: var(--maroon-light);
+            background: #FFF8F8;
+        }
+
+        .package-option input[type="radio"] {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            accent-color: var(--maroon-base);
+        }
+
+        .package-title {
+            font-weight: 700;
+            color: var(--maroon-dark);
+            font-size: 1.05rem;
+            margin-bottom: 5px;
+        }
+
+        .package-price {
+            color: var(--maroon-light);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .package-features {
+            font-size: 0.85rem;
+            color: #554446;
+            list-style-type: none;
+        }
+
+        .package-features li {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .package-option.selected {
+            border-color: var(--gold);
+            background-color: #FFF2F4;
+            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--maroon-base), var(--maroon-dark));
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 14, 23, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--gold);
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, var(--maroon-light), var(--maroon-base));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 14, 23, 0.4);
+        }
+
+        .alert-success {
+            background-color: #FFF2F4;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+            color: var(--dark);
+        }
+
+        .alert-success h3 {
+            color: var(--maroon-dark);
+            margin-bottom: 10px;
+        }
+
+        .summary-box {
+            background: white;
+            border-left: 4px solid var(--maroon-base);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .summary-item { margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Vied Photobooth</h1>
+        <p>Rasakan keseruan Video & Photobooth Premium dengan latar estetik, pencahayaan sinematik, dan cetak instan kualitas tinggi.</p>
+    </div>
+
+    <div class="container">
+        <div class="reservation-card">
+            <div class="card-header">
+                <h2>Formulir Reservasi Slot</h2>
+                <p>Silakan lengkapi detail pesanan untuk mengamankan sesi photobooth Anda</p>
+            </div>
+
+            <form id="boothForm" class="booking-form">
+                <div class="form-section-title">1. Informasi Kontak</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fullName">Nama Lengkap</label>
+                        <input type="text" id="fullName" placeholder="Masukkan nama sesuai ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="whatsapp">Nomor WhatsApp</label>
+                        <input type="tel" id="whatsapp" placeholder="Contoh: 0812XXXXXXXX" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="email">Alamat Email</label>
+                        <input type="email" id="email" placeholder="nama@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-section-title">2. Paket & Jadwal Sesi</div>
+                <div class="form-grid">
+                    <div class="package-grid">
+                        <div class="package-option selected" onclick="selectPackage(this, 'Standard Box - Rp 150.000')">
+                            <input type="radio" name="packageRadio" id="pkg1" checked>
+                            <div class="package-title">Standard Box</div>
+                            <div class="package-price">Rp 150.000</div>
+                            <ul class="package-features">
+                                <li>✦ Sesi Foto 15 Menit</li>
+                                <li>✦ 2x Cetak Kertas Foto Premium</li>
+                                <li>✦ Semua File Digital (QR Code)</li>
+                            </ul>
+                        </div>
+                        <div class="package-option" onclick="selectPackage(this, 'Glamour Video Booth - Rp 300.000')">
+                            <input type="radio" name="packageRadio" id="pkg2">
+                            <div class="package-title">Glamour Video Booth</div>
+                            <div class="package-price">Rp 300.000</div>
+                            <ul class="package-features">
+                                <li>✦ Sesi Video & Foto 30 Menit</li>
+                                <li>✦ 4x Cetak & Efek Video Slo-Mo</li>
+                                <li>✦ Properti Premium & Akses Cloud</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reserveDate">Pilih Tanggal</label>
+                        <input type="date" id="reserveDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reserveTime">Pilih Jam Sesi</label>
+                        <select id="reserveTime" required>
+                            <option value="" disabled selected>-- Pilih Waktu --</option>
+                            <option value="10:00 - 11:00">10:00 - 11:00 WIB</option>
+                            <option value="13:00 - 14:00">13:00 - 14:00 WIB</option>
+                            <option value="15:30 - 16:30">15:30 - 16:30 WIB</option>
+                            <option value="19:00 - 20:00">19:00 - 20:00 WIB</option>
+                            <option value="20:30 - 21:30">20:30 - 21:30 WIB</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="notes">Catatan Tambahan (Opsional)</label>
+                        <textarea id="notes" rows="3" placeholder="Contoh: Dresscode putih, request aksesoris ultah, dll."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Konfirmasi & Amankan Slot</button>
+            </form>
+
+            <div id="successNotice" class="alert-success">
+                <h3>✨ Reservasi Berhasil Dibuat!</h3>
+                <p>Slot Anda telah diblokir sementara. Detail invoice dan instruksi pembayaran DP telah dikirim ke WhatsApp dan Email Anda.</p>
+                <div class="summary-box" id="summaryContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Membatasi agar user tidak bisa memilih tanggal kemarin
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('reserveDate').setAttribute('min', today);
+
+        let selectedPackageName = "Standard Box - Rp 150.000";
+
+        function selectPackage(element, packageName) {
+            document.querySelectorAll('.package-option').forEach(opt => {
+                opt.classList.remove('selected');
+                opt.querySelector('input[type="radio"]').checked = false;
+            });
+            element.classList.add('selected');
+            element.querySelector('input[type="radio"]').checked = true;
+            selectedPackageName = packageName;
+        }
+
+        // Kirim data ke backend server.js saat disubmit
+        document.getElementById('boothForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('fullName').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                email: document.getElementById('email').value,
+                package: selectedPackageName,
+                date: document.getElementById('reserveDate').value,
+                time: document.getElementById('reserveTime').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const response = await fetch('/api/reservations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+
+                if (response.ok) {
+                    const summaryHTML = `
+                        <div class="summary-item"><strong>Nama Pemesan:</strong> ${result.name}</div>
+                        <div class="summary-item"><strong>No. WhatsApp:</strong> ${result.whatsapp}</div>
+                        <div class="summary-item"><strong>Paket Pilihan:</strong> ${result.package}</div>
+                        <div class="summary-item"><strong>Jadwal Sesi:</strong> ${result.date} | Pukul ${result.time}</div>
+                        <div class="summary-item" style="color: #722F37; font-weight: bold; margin-top: 10px;">Kode Booking: ${result.booking_code}</div>
+                    `;
+                    document.getElementById('summaryContent').innerHTML = summaryHTML;
+                    document.getElementById('boothForm').style.display = 'none';
+                    document.getElementById('successNotice').style.display = 'block';
+                } else {
+                    alert('Gagal membuat reservasi: ' + result.error);
+                }
+            } catch (error) {
+                alert('Gagal terhubung ke server. Pastikan terminal server.js Anda tetap menyala.');
+            }
+        });
+    </script>
+</body>
+</html>
