@@ -7,8 +7,7 @@ app.use(express.json());
 
 // ⚠️ GANTI DENGAN DATA DARI SUPABASE KAMU
 const SUPABASE_URL = 'https://eqyghtxsldbawedlhpua.supabase.co'; 
-const SUPABASE_KEY = 'MASUKKAN_ANON_PUBLIC_KEY_KAMU_DISINI'; 
-
+const SUPABASE_KEY = 'sb_publishable_nk8W5jyBWABsD07iMmnxvQ_qhrgnf4o'
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Menyajikan file HTML & CSS dari folder public
